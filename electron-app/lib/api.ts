@@ -1,17 +1,29 @@
 import axios, { AxiosInstance } from 'axios';
 
-type MoodType = 'anxiety' | 'depression' | 'sad' | 'happy' | 'calm' | 'neutral';
+type MoodType = 'normal' | 'depression' | 'suicidal' | 'anxiety' | 'bipolar' | 'stress' | 'personality';
 
-interface SetupData {
+interface UserRegistration {
+  user_id: string;
+  username: string;
   name: string;
-  tgids: string[];
-  userid: string;
   email: string;
+}
+
+interface ContactRequest {
+  user_id: string;
+  user_name: string;
+  contact_chatid: string;
 }
 
 interface ChatMessage {
   user_id: string;
   message: string;
+}
+
+interface ChatResponse {
+  response: string;
+  mood?: MoodType;
+  alert_sent?: boolean;
 }
 
 interface MoodResponse {
