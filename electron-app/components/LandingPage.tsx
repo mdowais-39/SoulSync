@@ -11,7 +11,7 @@ const moodConfig = {
     textColor: 'text-teal-800',
     emoji: '😰',
     title: 'Taking a Deep Breath',
-    message: "It's okay to feel anxious. Let's work through this together.",
+    message: "It is okay to feel anxious. Let us work through this together.",
     bgPattern: 'bg-teal-50/50',
   },
   depression: {
