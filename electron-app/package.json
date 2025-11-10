@@ -4,7 +4,9 @@
   "description": "SoulSync - Empathetic AI Mental Health Companion",
   "main": "electron/main.js",
   "scripts": {
-    "dev": "concurrently \"next dev\" \"electron .\"",
+    "dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "dev:next": "next dev",
+    "dev:electron": "electron .",
     "build": "next build",
     "start": "electron .",
     "electron:build": "electron-builder"
