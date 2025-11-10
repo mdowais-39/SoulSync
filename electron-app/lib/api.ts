@@ -138,4 +138,4 @@ class BackendAPI {
 }
 
 export const backendAPI = new BackendAPI();
-export type { MoodType, SetupData, ChatMessage, MoodResponse };
+export type { MoodType, UserRegistration, ContactRequest, ChatMessage, ChatResponse, MoodResponse };
