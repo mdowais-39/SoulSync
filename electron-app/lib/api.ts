@@ -93,7 +93,7 @@ class BackendAPI {
   async getMood(userId: string): Promise<MoodResponse> {
     if (this.isFakeMode) {
       // Return random mood for demo
-      const moods: MoodType[] = ['anxiety', 'depression', 'sad', 'happy', 'calm', 'neutral'];
+      const moods: MoodType[] = ['normal', 'depression', 'suicidal', 'anxiety', 'bipolar', 'stress', 'personality'];
       const randomMood = moods[Math.floor(Math.random() * moods.length)];
       console.log(`😊 [FAKE] Mood check for ${userId}:`, randomMood);
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -101,11 +101,11 @@ class BackendAPI {
     }
 
     try {
-      const response = await this.client!.get(`/mood/${userId}`);
-      return response.data;
+      // Mood detection happens through chat endpoint, so we return normal by default
+      return { mood: 'normal', message: 'Mood will be detected during conversation' };
     } catch (error: any) {
       console.error('Get mood error:', error);
-      return { mood: 'neutral', message: 'Error fetching mood' };
+      return { mood: 'normal', message: 'Error fetching mood' };
     }
   }
 
