@@ -51,7 +51,7 @@ const moodConfig = {
     textColor: 'text-purple-800',
     emoji: '😐',
     title: 'Hello There',
-    message: "How are you feeling today? I'm here to support you.",
+    message: "How are you feeling today? I am here to support you.",
     bgPattern: 'bg-purple-50/50',
   },
 };
