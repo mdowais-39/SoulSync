@@ -35,7 +35,7 @@ const moodConfig = {
     textColor: 'text-orange-800',
     emoji: '😊',
     title: 'Wonderful to See You!',
-    message: "I'm so glad you're feeling good today! Let's keep the positive vibes flowing.",
+    message: "I am so glad you are feeling good today! Let us keep the positive vibes flowing.",
     bgPattern: 'bg-yellow-50/50',
   },
   calm: {
