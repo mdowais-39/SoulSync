@@ -90,6 +90,7 @@ export default function ChatDashboard() {
   const [loadingMood, setLoadingMood] = useState(true);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
+  const [alertNotification, setAlertNotification] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const currentSession = getCurrentSession();
