@@ -117,6 +117,23 @@ export const useAuthStore = create<AuthState>()(
           }),
         }));
       },
+
+      updateMessage: (sessionId, messageId, content) => {
+        set((state) => ({
+          chatSessions: state.chatSessions.map((session) => {
+            if (session.id === sessionId) {
+              return {
+                ...session,
+                messages: session.messages.map((msg) =>
+                  msg.id === messageId ? { ...msg, content } : msg
+                ),
+                updatedAt: Date.now(),
+              };
+            }
+            return session;
+          }),
+        }));
+      },
       
       deleteSession: (sessionId) => {
         set((state) => ({
