@@ -209,10 +209,10 @@ export default function ChatDashboard() {
   }
 
   return (
-    <div className={`flex h-screen bg-gradient-to-br ${config.gradient} transition-all duration-1000`}>
+    <div className={`flex h-screen max-h-screen bg-gradient-to-br ${config.gradient} transition-all duration-1000 overflow-hidden`}>
       {/* Sidebar */}
       <div
-        className={`${sidebarOpen ? 'w-80' : 'w-0'} ${config.sidebarBg} backdrop-blur-sm border-r border-white/30 transition-all duration-300 overflow-hidden flex flex-col`}
+        className={`${sidebarOpen ? 'w-80' : 'w-0'} ${config.sidebarBg} backdrop-blur-sm border-r border-white/30 transition-all duration-300 overflow-hidden flex flex-col h-screen`}
       >
         {/* Sidebar Header */}
         <div className="p-4 border-b border-white/30">
