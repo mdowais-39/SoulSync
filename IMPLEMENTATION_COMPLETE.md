@@ -151,7 +151,7 @@ yarn dev
 - **Desktop:** Electron 28
 - **Styling:** Tailwind CSS 3.4
 - **State:** Zustand 4.5 with localStorage persistence
-- **AI:** DeepSeek R1 Distill 70B (via API)
+- **AI:** Local Ollama with Llama 2 (llama2:latest)
 - **Alerts:** Telegram Bot API
 - **HTTP:** Axios
 
