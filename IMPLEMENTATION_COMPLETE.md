@@ -129,7 +129,7 @@ yarn dev
 ```
 /app/electron-app/
 ├── lib/
-│   ├── api.ts           # DeepSeek AI integration + mood detection
+│   ├── api.ts           # Ollama (Llama 2) AI integration + mood detection
 │   ├── telegram.ts      # Telegram bot crisis alerts
 │   └── store.ts         # State management (Zustand)
 ├── components/
