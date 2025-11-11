@@ -3,14 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/lib/store';
 import EmailAuthScreen from '@/components/EmailAuthScreen';
+import MoodDashboard from '@/components/MoodDashboard';
 import ChatDashboard from '@/components/ChatDashboard';
 
 export default function Home() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, moodDashboardCompleted, setMoodDashboardCompleted } = useAuthStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize app
+    // Initialize app and reset mood dashboard on app open
+    setMoodDashboardCompleted(false);
     setLoading(false);
   }, []);
 
@@ -28,6 +30,11 @@ export default function Home() {
   // Show login/register screen if not authenticated
   if (!isAuthenticated) {
     return <EmailAuthScreen />;
+  }
+
+  // Show mood dashboard if not completed
+  if (!moodDashboardCompleted) {
+    return <MoodDashboard />;
   }
 
   // Show main chat dashboard
