@@ -190,6 +190,25 @@ export default function EmailAuthScreen() {
                     required={!isLogin}
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Telegram ID (Emergency Contact) <span className="text-red-500">*</span>
+                  </label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    💡 Don't know their Telegram ID? Forward a message to{' '}
+                    <a href="https://t.me/userinfobot" target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline font-semibold">
+                      @userinfobot
+                    </a>
+                  </p>
+                  <input
+                    type="text"
+                    value={formData.telegram_id}
+                    onChange={(e) => setFormData({ ...formData, telegram_id: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="123456789 or @username"
+                    required={!isLogin}
+                  />
+                </div>
               </>
             )}
 
