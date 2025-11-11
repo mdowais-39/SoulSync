@@ -393,7 +393,7 @@ export default function ChatDashboard() {
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-6" data-testid="messages-area">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-6" data-testid="messages-area">
           {!currentSession || currentSession.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="text-6xl mb-4">{config.emoji}</div>
