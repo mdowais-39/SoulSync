@@ -146,17 +146,14 @@ export default function ChatDashboard() {
     });
 
     try {
-      let streamedContent = '';
-      
       await backendAPI.sendChatStream(
         {
           user_id: user?.id || '',
           message: userMessage,
         },
-        // onChunk callback - update message as chunks arrive
-        (chunk: string) => {
-          streamedContent += chunk;
-          updateMessage(currentSessionId, assistantMsgId, streamedContent);
+        // onChunk callback - update message as chunks arrive (already cleaned in api.ts)
+        (cleanedChunk: string) => {
+          updateMessage(currentSessionId, assistantMsgId, cleanedChunk);
         },
         // onComplete callback - update mood and handle alerts
         (mood, alertSent) => {
