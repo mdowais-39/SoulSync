@@ -11,6 +11,7 @@ export default function EmailAuthScreen() {
     password: '',
     name: '',
     username: '',
+    telegram_id: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
