@@ -104,28 +104,83 @@ class BackendAPI {
     return 'normal';
   }
 
+  /**
+   * Extract mood label from response
+   * Format: {{MoodLabel}}
+   */
+  private extractMoodLabel(text: string): { cleanText: string; mood: MoodType } {
+    const moodRegex = /\{\{(Normal|Depression|Suicidal|Anxiety|Bipolar|Stress|Personality disorder)\}\}/i;
+    const match = text.match(moodRegex);
+    
+    if (match) {
+      const cleanText = text.replace(moodRegex, '').trim();
+      const moodLabel = match[1].toLowerCase().replace(' disorder', '');
+      
+      // Map to MoodType
+      const moodMap: Record<string, MoodType> = {
+        'normal': 'normal',
+        'depression': 'depression',
+        'suicidal': 'suicidal',
+        'anxiety': 'anxiety',
+        'bipolar': 'bipolar',
+        'stress': 'stress',
+        'personality': 'personality'
+      };
+      
+      return {
+        cleanText,
+        mood: moodMap[moodLabel] || 'normal'
+      };
+    }
+    
+    // Fallback: detect from user message if no label found
+    return {
+      cleanText: text,
+      mood: 'normal'
+    };
+  }
+
+  /**
+   * Generate personalized alert message using Ollama
+   */
+  private async generateAlertMessage(userName: string, mood: MoodType): Promise<string> {
+    try {
+      const prompt = `Generate a caring, natural message to send to ${userName}'s close friend via text. The message should inform them that ${userName} is experiencing ${mood} and needs support. Keep it warm, direct, and conversational (2-3 sentences). Don't use any special formatting or labels.`;
+      
+      const response = await this.ollamaClient.post('/api/chat', {
+        model: 'llama2:latest',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        stream: false,
+        options: {
+          temperature: 0.8,
+          num_predict: 150,
+        }
+      });
+      
+      return response.data.message.content.trim();
+    } catch (error) {
+      console.error('Error generating alert message:', error);
+      // Fallback message
+      return `Hey, your friend ${userName} is not feeling well. They seem to be experiencing ${mood}. Please take some time to talk to them and offer your support.`;
+    }
+  }
+
   async sendChat(data: ChatMessage): Promise<ChatResponse> {
     console.log('💬 Sending message to Ollama (Llama 2):', data);
     
     try {
-      // Detect mood from user message
-      const detectedMood = this.detectMoodFromText(data.message);
-      
-      // Save mood to localStorage
-      if (detectedMood !== 'normal') {
-        localStorage.setItem(`mood_${data.user_id}`, detectedMood);
-      }
-
-      // Check if we need to send crisis alert
-      let alertSent = false;
-      if (detectedMood === 'suicidal' || detectedMood === 'depression') {
-        alertSent = await this.sendCrisisAlert(data.user_id, detectedMood);
-      }
+      // Detect mood from user message initially
+      const initialMood = this.detectMoodFromText(data.message);
       
       // Create system prompt based on detected mood
-      const systemPrompt = this.getSystemPromptForMood(detectedMood);
+      const systemPrompt = this.getSystemPromptForMood(initialMood);
       
-      // Call Ollama API
+      // Call Ollama API (non-streaming for now, will update to streaming)
       const response = await this.ollamaClient.post('/api/chat', {
         model: 'llama2:latest',
         messages: [
@@ -145,11 +200,25 @@ class BackendAPI {
         }
       });
       
-      const aiResponse = response.data.message.content;
+      const rawResponse = response.data.message.content;
+      
+      // Extract mood label from response
+      const { cleanText, mood } = this.extractMoodLabel(rawResponse);
+      
+      // Save mood to localStorage
+      if (mood !== 'normal') {
+        localStorage.setItem(`mood_${data.user_id}`, mood);
+      }
+
+      // Check if we need to send crisis alert (any non-normal mood)
+      let alertSent = false;
+      if (mood !== 'normal') {
+        alertSent = await this.sendCrisisAlert(data.user_id, mood);
+      }
       
       return {
-        response: aiResponse,
-        mood: detectedMood,
+        response: cleanText,
+        mood: mood,
         alert_sent: alertSent
       };
     } catch (error: any) {
@@ -163,7 +232,7 @@ class BackendAPI {
 
       // Still try to send alert even with API error
       let alertSent = false;
-      if (detectedMood === 'suicidal' || detectedMood === 'depression') {
+      if (detectedMood !== 'normal') {
         alertSent = await this.sendCrisisAlert(data.user_id, detectedMood);
       }
       
@@ -172,6 +241,114 @@ class BackendAPI {
         mood: detectedMood,
         alert_sent: alertSent
       };
+    }
+  }
+
+  /**
+   * Send chat with streaming support
+   */
+  async sendChatStream(
+    data: ChatMessage,
+    onChunk: (chunk: string) => void,
+    onComplete: (mood: MoodType, alertSent: boolean) => void
+  ): Promise<void> {
+    console.log('💬 Sending message to Ollama (Streaming):', data);
+    
+    try {
+      // Detect mood from user message initially
+      const initialMood = this.detectMoodFromText(data.message);
+      
+      // Create system prompt based on detected mood
+      const systemPrompt = this.getSystemPromptForMood(initialMood);
+      
+      // Call Ollama API with streaming
+      const response = await fetch('http://localhost:11434/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama2:latest',
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt
+            },
+            {
+              role: 'user',
+              content: data.message
+            }
+          ],
+          stream: true,
+          options: {
+            temperature: 0.7,
+            num_predict: 500,
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n').filter(line => line.trim());
+
+          for (const line of lines) {
+            try {
+              const parsed = JSON.parse(line);
+              if (parsed.message?.content) {
+                const content = parsed.message.content;
+                fullResponse += content;
+                onChunk(content);
+              }
+            } catch (e) {
+              // Skip invalid JSON lines
+            }
+          }
+        }
+      }
+
+      // Extract mood label from complete response
+      const { cleanText, mood } = this.extractMoodLabel(fullResponse);
+      
+      // Save mood to localStorage
+      if (mood !== 'normal') {
+        localStorage.setItem(`mood_${data.user_id}`, mood);
+      }
+
+      // Send crisis alert if needed
+      let alertSent = false;
+      if (mood !== 'normal') {
+        alertSent = await this.sendCrisisAlert(data.user_id, mood);
+      }
+
+      onComplete(mood, alertSent);
+      
+    } catch (error: any) {
+      console.error('Ollama streaming error:', error);
+      
+      // Fallback response
+      const detectedMood = this.detectMoodFromText(data.message);
+      const fallbackText = this.getFallbackResponse(detectedMood);
+      
+      onChunk(fallbackText);
+      
+      if (detectedMood !== 'normal') {
+        localStorage.setItem(`mood_${data.user_id}`, detectedMood);
+        await this.sendCrisisAlert(data.user_id, detectedMood);
+      }
+      
+      onComplete(detectedMood, detectedMood !== 'normal');
     }
   }
 
