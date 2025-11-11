@@ -372,32 +372,40 @@ class BackendAPI {
    */
   private async sendCrisisAlert(userId: string, mood: MoodType): Promise<boolean> {
     try {
+      console.log('🔍 Looking for user data for alert...', userId);
+      
       // Get user data from localStorage
       const storedUsers = JSON.parse(localStorage.getItem('soulsync_users') || '[]');
+      console.log('📦 Stored users:', storedUsers);
+      
       const user = storedUsers.find((u: any) => u.id === userId);
+      console.log('👤 Found user:', user);
 
       if (!user || !user.telegram_id) {
-        console.warn('⚠️ No emergency contact found for user');
+        console.warn('⚠️ No emergency contact found for user. User:', user);
         return false;
       }
 
       // Check if we've already sent an alert recently (avoid spam)
-      const lastAlertKey = `last_alert_${userId}`;
+      const lastAlertKey = `last_alert_${userId}_${mood}`;
       const lastAlert = localStorage.getItem(lastAlertKey);
       const now = Date.now();
       
       if (lastAlert) {
         const timeSinceLastAlert = now - parseInt(lastAlert);
-        // Don't send another alert within 1 hour
-        if (timeSinceLastAlert < 3600000) {
+        // Don't send another alert within 30 minutes for same mood
+        if (timeSinceLastAlert < 1800000) {
           console.log('⏰ Alert cooldown active, skipping duplicate alert');
           return false;
         }
       }
 
+      console.log('📝 Generating personalized alert message...');
       // Generate personalized alert message using Ollama
       const personalizedMessage = await this.generateAlertMessage(user.name, mood);
+      console.log('✉️ Generated message:', personalizedMessage);
 
+      console.log('📤 Sending Telegram alert to:', user.telegram_id);
       // Send Telegram alert with personalized message
       const alertSent = await telegramService.sendCrisisAlert(user.telegram_id, {
         userName: user.name,
@@ -409,7 +417,9 @@ class BackendAPI {
       if (alertSent) {
         // Update last alert timestamp
         localStorage.setItem(lastAlertKey, now.toString());
-        console.log('✅ Crisis alert sent to emergency contact');
+        console.log('✅ Crisis alert sent successfully to emergency contact');
+      } else {
+        console.error('❌ Failed to send Telegram alert');
       }
 
       return alertSent;
