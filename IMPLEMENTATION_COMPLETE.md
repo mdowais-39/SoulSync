@@ -162,9 +162,9 @@ yarn dev
 - No backend database needed
 
 ### API Integrations
-1. **DeepSeek AI API**
-   - Endpoint: `https://api.deepseek.com/chat/completions`
-   - Model: `deepseek-reasoner`
+1. **Local Ollama API**
+   - Endpoint: `http://localhost:11434/api/chat`
+   - Model: `llama2:latest`
    - Temperature: 0.7
    - Max tokens: 500
 
