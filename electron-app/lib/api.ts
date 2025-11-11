@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { telegramService } from './telegram';
 
 type MoodType = 'normal' | 'depression' | 'suicidal' | 'anxiety' | 'bipolar' | 'stress' | 'personality';
 
