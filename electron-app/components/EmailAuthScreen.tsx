@@ -66,6 +66,7 @@ export default function EmailAuthScreen() {
           password: formData.password,
           name: formData.name,
           username: formData.username,
+          telegram_id: formData.telegram_id,
         };
 
         storedUsers.push(newUser);
@@ -80,11 +81,19 @@ export default function EmailAuthScreen() {
         });
 
         if (result.success) {
+          // Register Telegram contact
+          await backendAPI.registerContact({
+            user_id: userId,
+            user_name: formData.name,
+            contact_chatid: formData.telegram_id,
+          });
+
           useAuthStore.getState().setUser({
             id: userId,
             email: formData.email,
             name: formData.name,
             username: formData.username,
+            telegram_id: formData.telegram_id,
           });
         } else {
           setError(result.error || 'Registration failed');
