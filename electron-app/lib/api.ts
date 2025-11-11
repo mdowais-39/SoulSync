@@ -145,7 +145,7 @@ class BackendAPI {
    */
   private async generateAlertMessage(userName: string, mood: MoodType): Promise<string> {
     try {
-      const prompt = `Generate a caring, natural message to send to ${userName}'s close friend via text. The message should inform them that ${userName} is experiencing ${mood} and needs support. Keep it warm, direct, and conversational (2-3 sentences). Don't use any special formatting or labels.`;
+      const prompt = `Write a short, casual text message (1-2 sentences max) to tell someone their friend ${userName} is going through some mental health struggles with ${mood}. Be direct and caring but informal, like texting a friend. Don't use greetings or sign-offs.`;
       
       const response = await this.ollamaClient.post('/api/chat', {
         model: 'llama2:latest',
@@ -158,15 +158,15 @@ class BackendAPI {
         stream: false,
         options: {
           temperature: 0.8,
-          num_predict: 150,
+          num_predict: 100,
         }
       });
       
       return response.data.message.content.trim();
     } catch (error) {
       console.error('Error generating alert message:', error);
-      // Fallback message
-      return `Hey, your friend ${userName} is not feeling well. They seem to be experiencing ${mood}. Please take some time to talk to them and offer your support.`;
+      // Fallback message - casual and direct
+      return `Hey, your friend ${userName} is going through some mental health stuff right now (${mood}). Take some time to talk to them.`;
     }
   }
 
