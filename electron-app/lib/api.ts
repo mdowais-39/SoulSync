@@ -294,6 +294,7 @@ class BackendAPI {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let fullResponse = '';
+      let displayedResponse = '';
 
       if (reader) {
         while (true) {
@@ -309,7 +310,15 @@ class BackendAPI {
               if (parsed.message?.content) {
                 const content = parsed.message.content;
                 fullResponse += content;
-                onChunk(content);
+                
+                // Real-time label filtering - remove {{Label}} pattern before displaying
+                const cleanContent = fullResponse.replace(/\{\{[^}]+\}\}/g, '').trim();
+                
+                // Only send new content (diff from last displayed)
+                if (cleanContent !== displayedResponse) {
+                  displayedResponse = cleanContent;
+                  onChunk(cleanContent);
+                }
               }
             } catch (e) {
               // Skip invalid JSON lines
@@ -321,6 +330,11 @@ class BackendAPI {
       // Extract mood label from complete response
       const { cleanText, mood } = this.extractMoodLabel(fullResponse);
       
+      // Ensure final clean text is displayed (in case of any edge cases)
+      if (cleanText !== displayedResponse) {
+        onChunk(cleanText);
+      }
+      
       // Save mood to localStorage
       if (mood !== 'normal') {
         localStorage.setItem(`mood_${data.user_id}`, mood);
@@ -329,6 +343,7 @@ class BackendAPI {
       // Send crisis alert if needed
       let alertSent = false;
       if (mood !== 'normal') {
+        console.log('🚨 Non-normal mood detected, sending alert...', mood);
         alertSent = await this.sendCrisisAlert(data.user_id, mood);
       }
 
