@@ -41,7 +41,7 @@ export default function EmailAuthScreen() {
         }
       } else {
         // Registration logic
-        if (!formData.name || !formData.username || !formData.email || !formData.password) {
+        if (!formData.name || !formData.username || !formData.email || !formData.password || !formData.telegram_id) {
           setError('All fields are required');
           setLoading(false);
           return;
