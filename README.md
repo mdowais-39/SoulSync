@@ -24,7 +24,7 @@
 
 ### 🔗 Project Repositories
 
-**Frontend (Desktop App):** [github.com/mdowais-39/SoulSync](https://github.com/mdowais-39/SoulSync)  
+**Frontend (Desktop App):** [https://github.com/williskipsjr/SoulSync](https://github.com/williskipsjr/SoulSync)
 **Backend (AI Models):** [https://huggingface.co/owais39/Soul-Sync](https://huggingface.co/owais39/Soul-Sync) 
 **ML Models:** [huggingface.co/owais39/Soul-Sync](https://huggingface.co/owais39/Soul-Sync)
 
@@ -1089,7 +1089,7 @@ We welcome contributions from the community! Soul-Sync is built to help people, 
 **Muhammad Owais** - *Creator & Lead Developer*
 - Hugging Face: [@owais39](https://huggingface.co/owais39)
 - GitHub: [@mdowais-39](https://github.com/mdowais-39)
-- Email: mdowais.tech@gmail.com
+- Email: 392.mdowais@gmail.com
 
 ### Special Thanks
 
@@ -1238,7 +1238,7 @@ This project is dedicated to:
 If Soul-Sync helps you or someone you know, please consider:
 
 1. **⭐ Starring the repositories**
-   - [Frontend on GitHub](https://github.com/mdowais-39/SoulSync)
+   - [Frontend on GitHub](https://github.com/williskipsjr/SoulSync)
    - [Backend on Hugging Face](https://huggingface.co/owais39/Soul-Sync)
 
 2. **🔄 Sharing with others** who might benefit
@@ -1254,7 +1254,8 @@ Every star helps us reach more people who need support. 🌟
 ## 🔔 Stay Updated
 
 - **Watch** the GitHub repository for updates
-- **Follow** [@owais39](https://huggingface.co/owais39) on Hugging Face
+- **Follow** [mdowais-39](https://github.com/mdowais-39) on github , [@owais39](https://huggingface.co/owais39) on Hugging Face 
+- - **Follow** [williskipsjr](https://github.com/williskipsjr) on github
 - **Star** to show support and stay notified
 
 ---
